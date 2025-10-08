@@ -8,7 +8,9 @@ const Footer = () => {
         <p className="mb-4 text-gray-400">Your one-stop shop for fresh groceries, delivered fast.</p>
         <div className="flex justify-center space-x-6 mb-4">
           <a href="#" className="hover:text-green-400">About Us</a>
-          <a href="#" className="hover:text-green-400">Contact</a>
+          {/* <a href="#" className="hover:text-green-400">Contact</a> */}
+          // Change this line in the div with other links
+          <a href="/contact" className="hover:text-green-400">Contact</a>
           <a href="#" className="hover:text-green-400">Privacy Policy</a>
           <a href="#" className="hover:text-green-400">Terms of Service</a>
         </div>
