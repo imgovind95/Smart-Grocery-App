@@ -30,12 +30,12 @@ const Navbar = () => {
   }, [lastScrollY]);
   
   // Effect to fetch cart data when user logs in
-  useEffect(() => {
-    if (userInfo) {
-      fetchCart();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo?.token]);
+  // useEffect(() => {
+  //   if (userInfo) {
+  //     fetchCart();
+  //   }
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [userInfo?.token]);
 
   const handleLogout = () => {
     localStorage.removeItem('userInfo');
