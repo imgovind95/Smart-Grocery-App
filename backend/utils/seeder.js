@@ -13,7 +13,7 @@ const items = [
     name: 'Fresh Apples',
     category: 'Fruits',
     price: 120,
-    imageUrl: 'https://images.unsplash.com/photo-1560806887-1e4cd0b69665?w=500',
+    imageUrl: 'https://images.pexels.com/photos/62687/nice-apples-green-eating-healthy-healthy-food-62687.jpeg',
   },
   {
     name: 'Whole Wheat Bread',
