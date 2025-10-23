@@ -1,12 +1,22 @@
 import express from 'express';
-import { getItems, createItem } from '../controllers/itemController.js';
-import { protect } from '../middleware/authMiddleware.js';
+// Naye functions ko import karein
+import { getItems, createItem, getMyItems, updateItem, deleteItem } from '../controllers/itemController.js';
+import { protect, isSeller } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// New, secure code
-// router.route('/').get(protect, getItems).post(protect, createItem);
-// New Code
-router.route('/').get(getItems).post(protect, createItem);
+// Public route (sabhi items dekhne ke liye)
+router.route('/').get(getItems);
+
+// Seller routes
+router.route('/my-items').get(protect, isSeller, getMyItems);
+router.route('/').post(protect, isSeller, createItem); 
+
+// --- YEH NAYI LINE ADD KI GAYI HAI ---
+// Edit aur Delete ke liye naye routes (ID se)
+router
+    .route('/:id')
+    .put(protect, isSeller, updateItem)
+    .delete(protect, isSeller, deleteItem);
 
 export default router;

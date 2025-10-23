@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -28,14 +27,14 @@ const Navbar = () => {
       window.removeEventListener('scroll', controlNavbar);
     };
   }, [lastScrollY]);
-  
-  // Effect to fetch cart data when user logs in
-  // useEffect(() => {
-  //   if (userInfo) {
-  //     fetchCart();
-  //   }
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [userInfo?.token]);
+
+  // Effect to fetch cart data (only if user is a buyer)
+  useEffect(() => {
+    if (userInfo && userInfo.role === 'buyer') {
+      fetchCart();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo?.token]); // Refetch cart when user logs in/out
 
   const handleLogout = () => {
     localStorage.removeItem('userInfo');
@@ -58,17 +57,29 @@ const Navbar = () => {
           </Link>
           <div className="flex items-center space-x-4 md:space-x-6">
             {userInfo ? (
+              // User is Logged In
               <>
-                <Link to="/cart" className="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
+                {/* --- YAHAN CHANGE KIYA GAYA HAI --- */}
+                {userInfo.role === 'seller' ? (
+                  // Agar 'seller' hai, toh 'Dashboard' link dikhayein
+                  <Link to="/seller/dashboard" className="font-semibold hover:text-green-200 dark:hover:text-gray-300">
+                    Dashboard
+                  </Link>
+                ) : (
+                  // Agar 'buyer' hai, toh 'Cart' icon dikhayein
+                  <Link to="/cart" className="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+                {/* --- CHANGE YAHAN KHATAM --- */}
+
                 <span className="font-semibold hidden sm:block">Hello, {userInfo.name}</span>
                 <button
                   onClick={handleLogout}
@@ -78,6 +89,7 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
+              // User is Logged Out
               <>
                 <Link to="/login" className="hover:text-green-200 dark:hover:text-gray-300">Login</Link>
                 <Link to="/signup" className="bg-white text-green-600 font-semibold px-3 py-1 rounded hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">

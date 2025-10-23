@@ -5,9 +5,14 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  role: { 
+    type: String, 
+    enum: ['buyer', 'seller'],
+    default: 'buyer' 
+  },
 }, { timestamps: true });
 
-// Password hashing middleware
+// Password hashing middleware (Signup ke liye)
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -17,7 +22,8 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// Method to compare password
+// ### YEH FUNCTION MISSING HAI ###
+// Method to compare password (Login ke liye)
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

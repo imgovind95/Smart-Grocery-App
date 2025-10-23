@@ -5,7 +5,14 @@ const itemSchema = new mongoose.Schema({
   category: { type: String, required: true },
   price: { type: Number, required: true },
   imageUrl: { type: String, required: true },
-  // For smart features later
+  
+  // YEH LINE ADD KAREIN
+  seller: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    required: true, 
+    ref: 'User' 
+  },
+  
   vendors: [{
     name: String,
     price: Number,
