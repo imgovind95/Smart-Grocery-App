@@ -12,19 +12,19 @@ import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
-import SellerDashboardPage from './pages/SellerDashboardPage'; // Seller Dashboard ko import karein
+import SellerDashboardPage from './pages/SellerDashboardPage';
+import MyOrdersPage from './pages/MyOrdersPage'; // MyOrdersPage ko import karein
 
 function App() {
   const { fetchCart } = useCart();
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
-  // Yeh useEffect ab check karega ki user logged-in hai AUR 'buyer' hai
   useEffect(() => {
     if (userInfo && userInfo.role === 'buyer') {
       fetchCart();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo?.token]); // Jab bhi login state change ho, yeh run hoga
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo?.token]);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col">
@@ -35,6 +35,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
+          <Route path="/my-orders" element={<MyOrdersPage />} /> {/* MyOrdersPage Route add karein */}
           
           {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />

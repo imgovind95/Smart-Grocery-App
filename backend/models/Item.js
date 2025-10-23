@@ -5,14 +5,20 @@ const itemSchema = new mongoose.Schema({
   category: { type: String, required: true },
   price: { type: Number, required: true },
   imageUrl: { type: String, required: true },
-  
-  // YEH LINE ADD KAREIN
   seller: { 
     type: mongoose.Schema.Types.ObjectId, 
     required: true, 
     ref: 'User' 
   },
   
+  // --- YEH NAYA FIELD ADD KIYA GAYA HAI ---
+  countInStock: {
+    type: Number,
+    required: true,
+    default: 0 // Default stock 0 rakhein
+  },
+  // ----------------------------------------
+
   vendors: [{
     name: String,
     price: Number,

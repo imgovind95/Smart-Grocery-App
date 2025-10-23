@@ -8,6 +8,7 @@ import itemRoutes from './routes/itemRoutes.js';
 // ... other imports
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import sellerRoutes from './routes/sellerRoutes.js';
 
 // ... after other app.use()
 
@@ -30,7 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
-
+app.use('/api/seller', sellerRoutes);
 
 app.get('/', (req, res) => {
   res.send('Smart Grocery Cart API is running...');

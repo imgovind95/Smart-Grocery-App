@@ -1,7 +1,6 @@
 import Item from '../models/Item.js';
 
-// @desc    Fetch all items or search by keyword
-// @route   GET /api/items?keyword=...
+// ... getItems function same rahega ...
 export const getItems = async (req, res) => {
     try {
         const keyword = req.query.keyword 
@@ -20,18 +19,19 @@ export const getItems = async (req, res) => {
     }
 };
 
-// @desc    Create a new item (for sellers)
-// @route   POST /api/items
+// --- createItem function ko update kiya gaya hai ---
 export const createItem = async (req, res) => {
     try {
-        const { name, category, price, imageUrl } = req.body;
+        // countInStock ko req.body se lein
+        const { name, category, price, imageUrl, countInStock } = req.body;
         
         const item = new Item({
             name,
             category,
             price,
             imageUrl,
-            seller: req.user._id  // Item ko logged-in seller se link karein
+            countInStock, // Ise yahaan add karein
+            seller: req.user._id
         });
 
         const createdItem = await item.save();
@@ -41,8 +41,7 @@ export const createItem = async (req, res) => {
     }
 };
 
-// @desc    Get items for the logged-in seller
-// @route   GET /api/items/my-items
+// ... getMyItems function same rahega ...
 export const getMyItems = async (req, res) => {
   try {
     const items = await Item.find({ seller: req.user._id });
@@ -52,12 +51,10 @@ export const getMyItems = async (req, res) => {
   }
 };
 
-// --- YEH DO NAYE FUNCTIONS ADD KIYE GAYE HAIN ---
-
-// @desc    Update an item
-// @route   PUT /api/items/:id
+// --- updateItem function ko update kiya gaya hai ---
 export const updateItem = async (req, res) => {
-    const { name, category, price, imageUrl } = req.body;
+    // countInStock ko req.body se lein
+    const { name, category, price, imageUrl, countInStock } = req.body;
     
     try {
         const item = await Item.findById(req.params.id);
@@ -66,7 +63,6 @@ export const updateItem = async (req, res) => {
             return res.status(404).json({ message: 'Item not found' });
         }
 
-        // Security Check: Kya yeh item isi seller ka hai?
         if (item.seller.toString() !== req.user._id.toString()) {
             return res.status(401).json({ message: 'Not authorized' });
         }
@@ -76,6 +72,7 @@ export const updateItem = async (req, res) => {
         item.category = category || item.category;
         item.price = price || item.price;
         item.imageUrl = imageUrl || item.imageUrl;
+        item.countInStock = countInStock || item.countInStock; // Ise yahaan update karein
 
         const updatedItem = await item.save();
         res.json(updatedItem);
@@ -85,8 +82,7 @@ export const updateItem = async (req, res) => {
     }
 };
 
-// @desc    Delete an item
-// @route   DELETE /api/items/:id
+// ... deleteItem function same rahega ...
 export const deleteItem = async (req, res) => {
     try {
         const item = await Item.findById(req.params.id);
@@ -95,7 +91,6 @@ export const deleteItem = async (req, res) => {
             return res.status(404).json({ message: 'Item not found' });
         }
 
-        // Security Check: Kya yeh item isi seller ka hai?
         if (item.seller.toString() !== req.user._id.toString()) {
             return res.status(401).json({ message: 'Not authorized' });
         }
