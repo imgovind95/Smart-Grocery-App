@@ -13,7 +13,8 @@ import AboutPage from './pages/AboutPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import SellerDashboardPage from './pages/SellerDashboardPage';
-import MyOrdersPage from './pages/MyOrdersPage'; // MyOrdersPage ko import karein
+import MyOrdersPage from './pages/MyOrdersPage';
+import ProfilePage from './pages/ProfilePage'; // 1. ProfilePage ko import karein
 
 function App() {
   const { fetchCart } = useCart();
@@ -31,16 +32,17 @@ function App() {
       <Navbar />
       <main className="container mx-auto p-4 flex-grow">
         <Routes>
-          {/* Buyer Routes */}
+          {/* Common Routes */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/order-success" element={<OrderSuccessPage />} />
-          <Route path="/my-orders" element={<MyOrdersPage />} /> {/* MyOrdersPage Route add karein */}
-          
-          {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
 
+          {/* Buyer Routes */}
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/order-success" element={<OrderSuccessPage />} />
+          <Route path="/my-orders" element={<MyOrdersPage />} />
+          <Route path="/profile" element={<ProfilePage />} /> {/* 2. ProfilePage ka route add karein */}
+          
           {/* Seller Route */}
           <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
 

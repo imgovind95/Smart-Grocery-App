@@ -43,16 +43,17 @@ const Navbar = () => {
           <Link to="/" className="text-2xl font-bold">🛒 SmartCart</Link>
           <div className="flex items-center space-x-4 md:space-x-6">
             {userInfo ? (
+              // Logged In User
               <>
                 {userInfo.role === 'seller' ? (
+                  // Seller Links
                   <Link to="/seller/dashboard" className="font-semibold hover:text-green-200 dark:hover:text-gray-300">Dashboard</Link>
                 ) : (
+                  // Buyer Links
                   <>
-                    {/* --- "MY ORDERS" LINK ADD KIYA GAYA HAI --- */}
                     <Link to="/my-orders" className="font-semibold hover:text-green-200 dark:hover:text-gray-300 hidden md:block">
                       My Orders
                     </Link>
-                    {/* ------------------------------------------- */}
                     <Link to="/cart" className="relative">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -63,10 +64,19 @@ const Navbar = () => {
                     </Link>
                   </>
                 )}
+                
+                {/* --- PROFILE LINK ADD KIYA GAYA HAI --- */}
+                {/* Yeh link sabhi logged-in users (buyer & seller) ko dikhega */}
+                <Link to="/profile" className="font-semibold hover:text-green-200 dark:hover:text-gray-300 hidden md:block">
+                  Profile
+                </Link>
+                {/* -------------------------------------- */}
+
                 <span className="font-semibold hidden sm:block">Hello, {userInfo.name}</span>
                 <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition-colors">Logout</button>
               </>
             ) : (
+              // Logged Out User
               <>
                 <Link to="/login" className="hover:text-green-200 dark:hover:text-gray-300">Login</Link>
                 <Link to="/signup" className="bg-white text-green-600 font-semibold px-3 py-1 rounded hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">Sign Up</Link>

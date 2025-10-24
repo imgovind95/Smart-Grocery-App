@@ -5,13 +5,10 @@ import morgan from 'morgan';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import itemRoutes from './routes/itemRoutes.js';
-// ... other imports
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import sellerRoutes from './routes/sellerRoutes.js';
-
-// ... after other app.use()
-
+import userRoutes from './routes/userRoutes.js'; // <-- ADD THIS IMPORT LINE
 
 // Load env vars
 dotenv.config();
@@ -32,6 +29,7 @@ app.use('/api/items', itemRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/seller', sellerRoutes);
+app.use('/api/users', userRoutes); // <-- ADD THIS APP.USE LINE
 
 app.get('/', (req, res) => {
   res.send('Smart Grocery Cart API is running...');
