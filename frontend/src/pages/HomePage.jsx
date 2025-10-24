@@ -56,7 +56,7 @@ const HomePage = () => {
       {/* --- IMAGE SLIDER SECTION --- */}
       {/* Yahaan ImageSlider ko bina 'heroContent' prop ke call kiya gaya hai */}
       <section className="mt-4 mb-8">
-        <ImageSlider images={sliderImages} interval={5000} /> 
+        <ImageSlider images={sliderImages} interval={2800} /> 
       </section>
       {/* --------------------------- */}
 

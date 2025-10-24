@@ -14,7 +14,10 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import SellerDashboardPage from './pages/SellerDashboardPage';
 import MyOrdersPage from './pages/MyOrdersPage';
-import ProfilePage from './pages/ProfilePage'; // 1. ProfilePage ko import karein
+import ProfilePage from './pages/ProfilePage';
+import RecipesPage from './pages/RecipesPage';
+import RecipeDetailPage from './pages/RecipeDetailPage';
+import MyPantryPage from './pages/MyPantryPage'; // 1. Import MyPantryPage
 
 function App() {
   const { fetchCart } = useCart();
@@ -24,7 +27,6 @@ function App() {
     if (userInfo && userInfo.role === 'buyer') {
       fetchCart();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.token]);
 
   return (
@@ -37,12 +39,17 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
 
+          {/* Recipe Routes */}
+          <Route path="/recipes" element={<RecipesPage />} />
+          <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+
           {/* Buyer Routes */}
           <Route path="/cart" element={<CartPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
           <Route path="/my-orders" element={<MyOrdersPage />} />
-          <Route path="/profile" element={<ProfilePage />} /> {/* 2. ProfilePage ka route add karein */}
-          
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/my-pantry" element={<MyPantryPage />} /> {/* 2. Add MyPantryPage Route */}
+
           {/* Seller Route */}
           <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
 
