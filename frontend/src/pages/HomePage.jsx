@@ -14,12 +14,12 @@ const HomePage = () => {
 
   // Slider ke liye images
   const sliderImages = [
-    'https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Fresh Apples
-    'https://images.pexels.com/photos/3270054/pexels-photo-3270054.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Fresh Vegetables
-    'https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Bread and Groceries
-    'https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Milk and Dairy
-    'https://images.pexels.com/photos/13466256/pexels-photo-13466256.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Yogurt and healthy food
-    'https://images.pexels.com/photos/4049876/pexels-photo-4049876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // Shopping cart full of groceries
+    'https://images.pexels.com/photos/672101/pexels-photo-672101.jpeg', // Fresh Apples
+    'https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg', // Fresh Vegetables
+    'https://images.pexels.com/photos/30688912/pexels-photo-30688912.jpeg', // Bread and Groceries
+    'https://images.pexels.com/photos/7881123/pexels-photo-7881123.jpeg', // Milk and Dairy
+    'https://images.pexels.com/photos/7937045/pexels-photo-7937045.jpeg', // Yogurt and healthy food
+    'https://images.pexels.com/photos/8939307/pexels-photo-8939307.jpeg', // Shopping cart full of groceries
   ];
 
   useEffect(() => {
