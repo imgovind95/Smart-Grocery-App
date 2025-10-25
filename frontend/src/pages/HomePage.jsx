@@ -2,17 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
-import ItemCard from '../components/ItemCard'; // ItemCard ko import karein
-import ImageSlider from '../components/ImageSlider'; // ImageSlider ko import karein
+import ItemCard from '../components/ItemCard';
+import ImageSlider from '../components/ImageSlider';
 
 const HomePage = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [selectedTag, setSelectedTag] = useState(''); // State for selected tag filter
   const { cart } = useCart();
 
-  // Slider ke liye images
+  // Define some common tags for filtering buttons
+  const filterTags = ['healthy', 'vegan', 'high-protein', 'organic', 'fruit'];
+
   const sliderImages = [
     'https://images.pexels.com/photos/672101/pexels-photo-672101.jpeg', // Fresh Apples
     'https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg', // Fresh Vegetables
@@ -22,13 +25,17 @@ const HomePage = () => {
     'https://images.pexels.com/photos/8939307/pexels-photo-8939307.jpeg', // Shopping cart full of groceries
   ];
 
+  // Fetch items based on keyword AND tag
   useEffect(() => {
-    // Debounced item fetching logic
     const fetchItems = async () => {
       try {
         setLoading(true);
         setError(null);
-        const { data } = await api.get(`/api/items?keyword=${searchKeyword}`);
+        let queryString = `?keyword=${searchKeyword}`;
+        if (selectedTag) {
+            queryString += `&tag=${selectedTag}`;
+        }
+        const { data } = await api.get(`/api/items${queryString}`);
         setItems(data);
       } catch (err) {
         console.error('Error fetching items:', err);
@@ -40,54 +47,87 @@ const HomePage = () => {
 
     const timer = setTimeout(() => {
         fetchItems();
-    }, 500); // 500ms delay for search
+    }, searchKeyword ? 500 : 0);
 
-    return () => clearTimeout(timer); // Cleanup timer
+    return () => clearTimeout(timer);
 
-  }, [searchKeyword]); // Refetch when searchKeyword changes
+  }, [searchKeyword, selectedTag]);
 
   const handleSearchChange = (e) => {
     setSearchKeyword(e.target.value);
   };
 
+  const handleTagClick = (tag) => {
+    setSelectedTag(currentTag => currentTag === tag ? '' : tag);
+    setSearchKeyword('');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       
-      {/* --- IMAGE SLIDER SECTION --- */}
-      {/* Yahaan ImageSlider ko bina 'heroContent' prop ke call kiya gaya hai */}
+      {/* Image Slider */}
       <section className="mt-4 mb-8">
-        <ImageSlider images={sliderImages} interval={2800} /> 
+        <ImageSlider images={sliderImages} interval={5000} /> 
       </section>
-      {/* --------------------------- */}
-
-      {/* --- HERO SECTION (ALAG SE) --- */}
-      {/* Yeh section ab wapas aa gaya hai */}
+      
+      {/* Hero Section */}
       <header className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-8">
         <h1 className="text-5xl font-extrabold mb-4 text-gray-900 dark:text-white">Fresh Groceries, Delivered Fast</h1>
         <p className="text-xl text-gray-600 dark:text-gray-300">The best products at the best prices, right at your doorstep.</p>
       </header>
-      {/* -------------------------- */}
 
       {/* Search Bar */}
       <div className="max-w-xl mx-auto mb-8">
         <input
           type="text"
-          placeholder="Search for products as you type..."
+          placeholder="Search for products..."
           className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
           value={searchKeyword}
           onChange={handleSearchChange}
         />
       </div>
 
+      {/* --- TAG FILTER BUTTONS --- */}
+      <div className="flex justify-center flex-wrap gap-2 mb-8 px-4">
+         <button
+            onClick={() => handleTagClick('')}
+            className={`px-4 py-2 rounded-full text-sm font-medium border cursor-pointer ${ // <-- Added cursor-pointer
+                 selectedTag === '' 
+                 ? 'bg-green-600 text-white border-green-600' 
+                 : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
+            }`}
+          >
+            All Products
+          </button>
+        {filterTags.map(tag => (
+          <button
+            key={tag}
+            onClick={() => handleTagClick(tag)}
+            className={`px-4 py-2 rounded-full text-sm font-medium border capitalize cursor-pointer ${ // <-- Added cursor-pointer
+                 selectedTag === tag 
+                 ? 'bg-green-600 text-white border-green-600' 
+                 : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
+            }`}
+          >
+            {tag.replace('-', ' ')}
+          </button>
+        ))}
+      </div>
+      {/* ------------------------ */}
+
       {/* Products Section */}
       <section className="py-8">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Our Products</h2>
+        <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+            {selectedTag ? `Showing: ${selectedTag.replace('-', ' ')} Products` : 'Our Products'}
+        </h2>
         {loading ? (
           <p className="text-center dark:text-gray-300">Loading products...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : items.length === 0 ? (
-          <p className="text-center text-gray-500 dark:text-gray-400">No products found matching your search.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">
+              {selectedTag || searchKeyword ? 'No products found matching your criteria.' : 'No products available.'}
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {items.map((item) => (
