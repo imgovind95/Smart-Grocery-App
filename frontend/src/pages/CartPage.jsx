@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,11 +8,7 @@ const CartPage = () => {
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     if (fetchCart) {
-    //         fetchCart();
-    //     }
-    // }, [fetchCart]);
+    // Removed useEffect for fetchCart as it's now in App.jsx
 
     const handleRemove = (itemId) => {
         removeFromCart(itemId);
@@ -28,12 +23,16 @@ const CartPage = () => {
     };
 
     const handlePlaceOrder = async () => {
-        // This is the previous mock order function
         setIsPlacingOrder(true);
         try {
-            await api.post('/api/orders');
-            await fetchCart();
-            navigate('/order-success');
+            // Get the created order data
+            const { data: createdOrder } = await api.post('/api/orders');
+            
+            await fetchCart(); // Refresh cart (will be empty)
+            
+            // Pass order details to success page via state
+            navigate('/order-success', { state: { order: createdOrder } });
+            
         } catch (error) {
             console.error('Failed to place order', error);
             alert(error.response?.data?.message || 'Could not place your order. Please try again.');
@@ -42,8 +41,23 @@ const CartPage = () => {
         }
     };
 
-    if (loading) return <p className="text-center mt-8 dark:text-gray-300">Loading your cart...</p>;
 
+    if (loading) return <p className="text-center mt-8 dark:text-gray-300">Loading your cart...</p>;
+    
+    // Check if user is logged in before showing cart
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+     if (!userInfo && !loading) {
+         return (
+              <div className="text-center mt-10">
+                  <h2 className="text-2xl font-semibold dark:text-gray-100">Please Log In</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">You need to log in to view your cart.</p>
+                  <Link to="/login" className="mt-4 inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600">
+                      Go to Login
+                  </Link>
+              </div>
+          );
+    }
+    
     if (!cart || !cart.items || cart.items.filter(ci => ci.item).length === 0) {
         return (
             <div className="text-center mt-10">
@@ -61,7 +75,7 @@ const CartPage = () => {
             <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg">
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                     {cart.items
-                        .filter(cartItem => cartItem.item)
+                        .filter(cartItem => cartItem.item) // Filter out items missing data
                         .map(({ item, quantity }) => (
                             <li key={item._id} className="flex items-center justify-between p-4">
                                 <div className="flex items-center space-x-4">
@@ -69,7 +83,7 @@ const CartPage = () => {
                                     <div className="dark:text-gray-200">
                                         <h3 className="text-lg font-semibold">{item.name}</h3>
                                         <p className="text-gray-500 dark:text-gray-400">Quantity: {quantity}</p>
-                                        <p className="text-gray-700 dark:text-gray-300">Price: ₹{item.price}</p>
+                                        <p className="text-gray-700 dark:text-gray-300">Price: ₹{item.price.toFixed(2)}</p>
                                     </div>
                                 </div>
                                 <button
@@ -86,7 +100,7 @@ const CartPage = () => {
                     <button
                         onClick={handlePlaceOrder}
                         disabled={isPlacingOrder}
-                        className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400"
+                        className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isPlacingOrder ? 'Placing Order...' : 'Place Order'}
                     </button>

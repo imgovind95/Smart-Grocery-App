@@ -1,6 +1,6 @@
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
-import Item from '../models/Item.js'; // Item model ko import karein
+import Item from '../models/Item.js';
 
 // @desc    Create a new order from the cart
 // @route   POST /api/orders
@@ -17,18 +17,15 @@ export const createOrder = async (req, res) => {
         
         // Stock checking and updating logic
         for (const cartItem of cart.items) {
-            // Safety check in case item was deleted but still in cart
-            if (!cartItem.item) {
+             if (!cartItem.item) {
                  console.warn(`Skipping null item in cart for user ${req.user._id}`);
-                 continue; // Skip this item
+                 continue;
             }
-
             const itemFromDB = await Item.findById(cartItem.item._id);
             if (!itemFromDB) {
-                // Remove item from cart if it no longer exists
                 cart.items = cart.items.filter(i => !i.item.equals(cartItem.item._id));
                 await cart.save();
-                return res.status(404).json({ message: `Item ${cartItem.item.name || cartItem.item._id} not found in store. Cart updated.` });
+                return res.status(404).json({ message: `Item ${cartItem.item.name || cartItem.item._id} not found. Cart updated.` });
             }
             if (itemFromDB.countInStock < cartItem.quantity) {
                 return res.status(400).json({ message: `Item ${itemFromDB.name} is out of stock.` });
@@ -41,11 +38,10 @@ export const createOrder = async (req, res) => {
                 item: itemFromDB._id
             });
             calculatedTotalPrice += itemFromDB.price * cartItem.quantity;
-            itemFromDB.countInStock -= cartItem.quantity; // Stock kam karein
+            itemFromDB.countInStock -= cartItem.quantity;
             await itemFromDB.save();
         }
         
-        // If all items were invalid/removed, orderItems might be empty
         if (orderItems.length === 0) {
              return res.status(400).json({ message: 'No valid items in cart to place order.' });
         }
@@ -58,13 +54,17 @@ export const createOrder = async (req, res) => {
 
         const createdOrder = await order.save();
 
-        cart.items = []; // Cart khaali karein
+        cart.items = [];
         await cart.save();
 
-        res.status(201).json(createdOrder);
+        // Populate items before sending response
+        const populatedOrder = await Order.findById(createdOrder._id)
+                                        .populate('orderItems.item', '_id name imageUrl'); // Populate necessary fields
+
+        res.status(201).json(populatedOrder); // Send populated order back
 
     } catch (error) {
-        console.error(error); // Error log karein
+        console.error(error);
         res.status(500).json({ message: `Server Error: ${error.message}` });
     }
 };
@@ -74,11 +74,10 @@ export const createOrder = async (req, res) => {
 // @route   GET /api/orders/myorders
 export const getMyOrders = async (req, res) => {
     try {
-        // User ID ke basis par orders dhoondhein aur naye se puraane sort karein
         const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {
-        console.error(error); // Error log karein
+        console.error(error);
         res.status(500).json({ message: `Server Error: ${error.message}` });
     }
 };

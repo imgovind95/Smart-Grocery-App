@@ -10,21 +10,33 @@ dotenv.config();
 
 await connectDB();
 
-// Yahaan aapke saare items hain (aapke diye gaye list se)
+// Yahaan aapke saare items hain
 const itemsData = [
     {
         name: 'Fresh Apples',
         category: 'Fruits',
-        price: 120,
+        price: 120, // Price on SmartCart
         imageUrl: 'https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=600',
-        countInStock: 20
+        countInStock: 20,
+        // --- ADDED VENDORS ---
+        vendors: [
+            { storeName: 'Local Mart', price: 115 },
+            { storeName: 'BigBasket', price: 125 }
+        ]
+        // ---------------------
     },
     {
         name: 'Whole Wheat Bread',
         category: 'Bakery',
-        price: 45,
+        price: 45, // Price on SmartCart
         imageUrl: 'https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg?auto=compress&cs=tinysrgb&w=600',
-        countInStock: 20
+        countInStock: 20,
+        // --- ADDED VENDORS ---
+        vendors: [
+             { storeName: 'Corner Shop', price: 48 },
+             { storeName: 'Grofers', price: 42 } // Example: Cheaper elsewhere
+        ]
+        // ---------------------
     },
     {
         name: 'Organic Milk',
@@ -32,6 +44,7 @@ const itemsData = [
         price: 60,
         imageUrl: 'https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=600',
         countInStock: 20
+        // vendors: [] // Example: No comparison data
     },
     {
         name: 'Coca-Cola Can',
@@ -166,46 +179,47 @@ const importData = async () => {
         // Step 1: Default seller dhoondhein
         let adminUser = await User.findOne({ role: 'seller' });
         if (!adminUser) {
-            adminUser = await User.findOne(); // Agar seller nahi mila toh koi bhi user le lein
+            adminUser = await User.findOne();
         }
 
         if (!adminUser) {
-            console.error('Error: No users found in the database. Please create at least one user (preferably a seller) before running the seeder.');
+            console.error('Error: No users found. Please create a user first.');
             process.exit(1);
         }
-        console.log(`Using user "${adminUser.name}" (${adminUser._id}) as the default seller for seeded items.`);
+        console.log(`Using user "${adminUser.name}" (${adminUser._id}) as the default seller.`);
 
-        // Step 2: Har item mein seller ki ID add karein
+        // Step 2: Har item mein seller, tags, nutritionInfo add karein
         const itemsWithSeller = itemsData.map(item => {
-            // Har item ke liye tag aur nutritionInfo bhi add karein (example data)
-            let tags = item.tags || []; // Default to empty array if not present
-            let nutritionInfo = item.nutritionInfo || {}; // Default to empty object
+            let tags = item.tags || [];
+            let nutritionInfo = item.nutritionInfo || {};
 
-            // Example logic to add tags based on category (aap ise expand kar sakte hain)
             if (item.category === 'Fruits' || item.category === 'Vegetables') tags.push('healthy', 'vegan');
             if (item.category === 'Dairy') tags.push('dairy', 'calcium');
             if (item.name.toLowerCase().includes('organic')) tags.push('organic');
 
-            // Example nutrition (aapko har item ke liye sahi data daalna hoga)
             if (item.name === 'Fresh Apples') nutritionInfo = { calories: 95 };
             if (item.name === 'Organic Milk') nutritionInfo = { calories: 150, protein: 8 };
 
+            // Ensure vendors array exists, default to empty if not present in itemsData
+            const vendors = item.vendors || [];
+
             return {
-                ...item,
+                ...item, // Keep original data including countInStock and manually added vendors
                 seller: adminUser._id,
-                tags: [...new Set(tags)], // Ensure unique tags
-                nutritionInfo: nutritionInfo
+                tags: [...new Set(tags)],
+                nutritionInfo: nutritionInfo,
+                vendors: vendors // Explicitly include vendors
              };
         });
 
-        // Step 3: Puraana data clear karein (Items, Carts, Recipes)
+        // Step 3: Puraana data clear karein
         console.log('Clearing old data...');
         await Item.deleteMany();
         await Cart.deleteMany();
         await Recipe.deleteMany();
         console.log('Old data cleared.');
 
-        // Step 4: Naye items ko database mein insert karein
+        // Step 4: Naye items ko insert karein
         console.log('Importing items...');
         const createdItems = await Item.insertMany(itemsWithSeller);
         console.log(`${createdItems.length} Items Imported Successfully!`);
@@ -216,23 +230,19 @@ const importData = async () => {
         const tomatoItem = createdItems.find(item => item.name === 'Vine Tomatoes');
 
         if (!onionItem || !tomatoItem) {
-            console.warn('Warning: Could not find "Fresh Onions" or "Vine Tomatoes" in the created items. Skipping recipe seeding.');
+            console.warn('Warning: Could not find items for recipe seeding. Skipping recipe.');
         } else {
              const sampleRecipes = [
                 {
                     name: 'Simple Tomato Onion Curry',
-                    description: 'A basic and quick Indian curry base, perfect for vegetables or paneer.',
-                    imageUrl: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600', // Example food image
-                    instructions: '1. Finely chop onions and tomatoes.\n2. Heat oil in a pan, add cumin seeds until they splutter.\n3. Add onions and sauté until golden brown (about 5-7 minutes).\n4. Add ginger-garlic paste (if using) and sauté for a minute.\n5. Add tomatoes, salt, turmeric, chili powder, and coriander powder. Cook until tomatoes soften and oil starts to separate (about 5-8 minutes).\n6. Add a little water if needed to adjust consistency. Your base curry is ready!',
+                    description: 'A basic and quick Indian curry base.',
+                    imageUrl: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600',
+                    instructions: '1. Chop onions and tomatoes.\n2. Sauté onions.\n3. Add tomatoes and cook.\n4. Add spices.',
                     ingredients: [
                         { item: onionItem._id, quantity: 2, unit: 'medium' },
                         { item: tomatoItem._id, quantity: 3, unit: 'medium' },
-                        // Add IDs of other ingredient items here if they exist in createdItems
-                        // Example: { item: oilItem._id, quantity: 2, unit: 'tbsp' },
                     ],
-                    prepTime: '10 mins',
-                    cookTime: '15 mins',
-                    servings: 2,
+                    prepTime: '10 mins', cookTime: '15 mins', servings: 2,
                 }
             ];
              await Recipe.insertMany(sampleRecipes);
@@ -261,7 +271,6 @@ const destroyData = async () => {
     }
 };
 
-// Check command line arguments to decide whether to import or destroy
 if (process.argv[2] === '-d') {
     destroyData();
 } else {

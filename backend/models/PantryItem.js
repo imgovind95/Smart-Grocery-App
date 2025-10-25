@@ -14,17 +14,18 @@ const pantryItemSchema = new mongoose.Schema({
     quantity: {
         type: Number,
         required: true,
-        min: 0, // Quantity can be 0 or more
+        min: 0,
         default: 1,
     },
-    // Optional fields you might add later
-    // purchaseDate: { type: Date },
-    // expiryDate: { type: Date },
+    // --- NEW FIELD ADDED ---
+    expiryDate: {
+        type: Date, // Store expiry date
+        required: false // Make it optional initially
+    },
+    // -------------------------
     // lowStockThreshold: { type: Number, default: 1 } // Threshold for suggestions
 }, {
     timestamps: true,
-    // Ensure a user can only have one entry per item
-    unique: ['user', 'item']
 });
 
 // Create a unique index for user and item combination

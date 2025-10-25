@@ -1,9 +1,15 @@
 import mongoose from 'mongoose';
 
+const vendorPriceSchema = new mongoose.Schema({
+    storeName: { type: String, required: true },
+    price: { type: Number, required: true },
+    // Optional: lastChecked: { type: Date }
+}, { _id: false }); // Don't create separate IDs for each vendor price entry
+
 const itemSchema = new mongoose.Schema({
     name: { type: String, required: true },
     category: { type: String, required: true },
-    price: { type: Number, required: true },
+    price: { type: Number, required: true }, // Main price on THIS platform
     imageUrl: { type: String, required: true },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
@@ -15,17 +21,20 @@ const itemSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
-
-    // --- NEW FIELDS ADDED ---
     tags: {
-        type: [String], // Array of strings like 'vegan', 'high-protein', 'organic'
+        type: [String],
         default: []
     },
-    nutritionInfo: { // Basic nutritional info (can be expanded later)
+    nutritionInfo: {
         calories: { type: Number },
-        protein: { type: Number }, // in grams
-        // Add more fields like carbs, fat, etc. if needed
+        protein: { type: Number },
     },
+
+    // --- NEW FIELD ADDED ---
+    vendors: {
+        type: [vendorPriceSchema], // Array to store prices from other stores
+        default: []
+    }
     // -------------------------
 
 }, { timestamps: true });

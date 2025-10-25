@@ -2,28 +2,33 @@ import express from 'express';
 import {
     getPantryItems,
     addItemToPantry,
-    updatePantryItemQuantity,
+    updatePantryItem, // Renamed from updatePantryItemQuantity
     removePantryItem,
-    getPantrySuggestions
+    getPantrySuggestions,
+    getExpiringItems // Import new controller function
 } from '../controllers/pantryController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// All pantry routes require the user to be logged in
-router.use(protect);
+router.use(protect); // Apply protect middleware to all routes in this file
 
 router.route('/')
-    .get(getPantryItems); // Get all items
+    .get(getPantryItems);
 
 router.route('/add')
-    .post(addItemToPantry); // Add item (or update if exists)
+    .post(addItemToPantry);
 
 router.route('/suggestions')
-     .get(getPantrySuggestions); // Get low stock suggestions
+     .get(getPantrySuggestions);
+
+// --- NEW ROUTE ADDED ---
+router.route('/expiring')
+     .get(getExpiringItems); // Route to get items expiring soon
+// ----------------------
 
 router.route('/:id')
-    .put(updatePantryItemQuantity) // Update quantity by pantry item ID
-    .delete(removePantryItem); // Remove item by pantry item ID
+    .put(updatePantryItem) // Use the updated controller function
+    .delete(removePantryItem);
 
 export default router;
