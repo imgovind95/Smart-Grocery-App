@@ -140,7 +140,8 @@ const Navbar = () => {
              <button
                   onClick={toggleMobileMenu}
                   // Removed md:hidden
-                  className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white
+                  cursor-pointer"
                   aria-label="Toggle menu"
                 >
                   <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">

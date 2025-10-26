@@ -17,7 +17,8 @@ import MyOrdersPage from './pages/MyOrdersPage';
 import ProfilePage from './pages/ProfilePage';
 import RecipesPage from './pages/RecipesPage';
 import RecipeDetailPage from './pages/RecipeDetailPage';
-import MyPantryPage from './pages/MyPantryPage'; // 1. Import MyPantryPage
+import MyPantryPage from './pages/MyPantryPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage'; // 1. Import ForgotPasswordPage
 
 function App() {
   const { fetchCart } = useCart();
@@ -27,6 +28,7 @@ function App() {
     if (userInfo && userInfo.role === 'buyer') {
       fetchCart();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.token]);
 
   return (
@@ -38,6 +40,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} /> {/* 2. Add Forgot Password Route */}
 
           {/* Recipe Routes */}
           <Route path="/recipes" element={<RecipesPage />} />
@@ -48,7 +51,7 @@ function App() {
           <Route path="/order-success" element={<OrderSuccessPage />} />
           <Route path="/my-orders" element={<MyOrdersPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/my-pantry" element={<MyPantryPage />} /> {/* 2. Add MyPantryPage Route */}
+          <Route path="/my-pantry" element={<MyPantryPage />} />
 
           {/* Seller Route */}
           <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
@@ -58,6 +61,10 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+
+           {/* Add Reset Password Route (We'll create this page next) */}
+           {/* <Route path="/reset-password/:token" element={<ResetPasswordPage />} /> */}
+
         </Routes>
       </main>
       <Footer />
